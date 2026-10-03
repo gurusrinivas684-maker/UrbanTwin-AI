@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="UrbanTwin AI — Smart Traffic Optimization Using Graph Neural Networks and Vision Transformers. An intelligent traffic management system.">
+  <title>UrbanTwin AI — Smart Traffic Optimization</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- App CSS -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ═══════ Background Particles ═══════ -->
+  <div class="bg-particles" id="bgParticles"></div>
+
+  <!-- ═══════ Navbar ═══════ -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-logo">
+      <div class="logo-icon">U</div>
+      <span>URBANTWIN AI</span>
+    </div>
+    <div class="nav-links" id="navLinks">
+      <a href="#home" class="active">HOME</a>
+      <a href="#live">LIVE TRAFFIC</a>
+      <a href="#analysis">AI ANALYSIS</a>
+      <a href="#map-section">TRAFFIC MAP</a>
+      <a href="#signal">SIGNAL CONTROL</a>
+      <a href="#twin">DIGITAL TWIN</a>
+      <a href="#hardware">HARDWARE</a>
+      <a href="#about">ABOUT</a>
+    </div>
+    <div class="nav-right">
+      <button class="theme-toggle" id="themeToggle" title="Toggle Theme">🌙</button>
+      <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ═══════ HERO ═══════ -->
+  <section class="hero-section" id="home">
+    <div class="hero-grid">
+      <div class="hero-text">
+        <h1><span class="gradient-text">URBANTWIN AI</span></h1>
+        <p class="tagline">Smart Traffic Optimization Using Graph Neural Networks and Vision Transformers</p>
+        <p class="description">An intelligent traffic management system that uses computer vision, graph neural networks and adaptive traffic signal control to monitor and optimize urban traffic.</p>
+        <div class="hero-buttons">
+          <a href="#live" class="btn btn-primary">🚦 View Live Traffic</a>
+          <a href="#twin" class="btn btn-outline">▶ Start Simulation</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-canvas-wrapper">
+          <canvas id="heroCanvas"></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ Workflow Strip ═══════ -->
+  <div class="workflow-strip">
+    <div class="workflow-inner">
+      <div class="wf-step"><div class="wf-icon">📷</div> Traffic Camera</div>
+      <span class="wf-arrow">→</span>
+      <div class="wf-step"><div class="wf-icon">🔬</div> Vision Transformer</div>
+      <span class="wf-arrow">→</span>
+      <div class="wf-step"><div class="wf-icon">🚗</div> Vehicle Detection</div>
+      <span class="wf-arrow">→</span>
+      <div class="wf-step"><div class="wf-icon">🧠</div> Graph Neural Network</div>
+      <span class="wf-arrow">→</span>
+      <div class="wf-step"><div class="wf-icon">📊</div> Traffic Prediction</div>
+      <span class="wf-arrow">→</span>
+      <div class="wf-step"><div class="wf-icon">⚡</div> Signal Optimization</div>
+      <span class="wf-arrow">→</span>
+      <div class="wf-step"><div class="wf-icon">🚦</div> Smart Traffic Light</div>
+    </div>
+  </div>
+
+  <!-- ═══════ LIVE TRAFFIC ═══════ -->
+  <section class="section" id="live">
+    <div class="section-header reveal">
+      <h2>📡 LIVE TRAFFIC DASHBOARD</h2>
+      <p>Real-time traffic monitoring and analytics</p>
+      <span class="badge badge-demo mt-1">LIVE DEMO DATA</span>
+    </div>
+
+    <div class="stats-grid reveal">
+      <div class="stat-card glass">
+        <div class="stat-icon cyan">🚗</div>
+        <div class="stat-value" id="statVehicles">126</div>
+        <div class="stat-label">Total Vehicles</div>
+      </div>
+      <div class="stat-card glass">
+        <div class="stat-icon green">📊</div>
+        <div class="stat-value" id="statDensity">72%</div>
+        <div class="stat-label">Traffic Density</div>
+      </div>
+      <div class="stat-card glass">
+        <div class="stat-icon purple">⚡</div>
+        <div class="stat-value" id="statSpeed">32 km/h</div>
+        <div class="stat-label">Average Speed</div>
+      </div>
+      <div class="stat-card glass">
+        <div class="stat-icon orange">⚠️</div>
+        <div class="stat-value" id="statCongestion">MODERATE</div>
+        <div class="stat-label">Congestion</div>
+      </div>
+      <div class="stat-card glass">
+        <div class="stat-icon red">⏱️</div>
+        <div class="stat-value" id="statWaiting">41s</div>
+        <div class="stat-label">Waiting Time</div>
+      </div>
+      <div class="stat-card glass">
+        <div class="stat-icon blue">🚦</div>
+        <div class="stat-value" id="statSignal">ACTIVE</div>
+        <div class="stat-label">Signal Status</div>
+      </div>
+    </div>
+
+    <h3 class="text-center mt-3 reveal" style="color:var(--cyan);font-family:var(--font-display);font-size:0.95rem;letter-spacing:2px;">DIRECTION OVERVIEW</h3>
+
+    <div class="direction-grid reveal">
+      <div class="dir-card glass" id="dirNorth">
+        <h4><span class="dir-indicator moderate"></span> NORTH</h4>
+        <p><span class="dir-val" id="dirNorthVeh">32</span> vehicles</p>
+        <p><span class="dir-val" id="dirNorthDen">65%</span> density</p>
+      </div>
+      <div class="dir-card glass" id="dirSouth">
+        <h4><span class="dir-indicator low"></span> SOUTH</h4>
+        <p><span class="dir-val" id="dirSouthVeh">18</span> vehicles</p>
+        <p><span class="dir-val" id="dirSouthDen">40%</span> density</p>
+      </div>
+      <div class="dir-card glass" id="dirEast">
+        <h4><span class="dir-indicator high"></span> EAST</h4>
+        <p><span class="dir-val" id="dirEastVeh">51</span> vehicles</p>
+        <p><span class="dir-val" id="dirEastDen">86%</span> density</p>
+      </div>
+      <div class="dir-card glass" id="dirWest">
+        <h4><span class="dir-indicator moderate"></span> WEST</h4>
+        <p><span class="dir-val" id="dirWestVeh">25</span> vehicles</p>
+        <p><span class="dir-val" id="dirWestDen">52%</span> density</p>
+      </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="charts-grid reveal">
+      <div class="chart-card glass">
+        <h4>Vehicle Count vs Time <span class="badge badge-demo">SIMULATED DATA</span></h4>
+        <div class="chart-wrapper"><canvas id="chartVehicles"></canvas></div>
+      </div>
+      <div class="chart-card glass">
+        <h4>Traffic Density vs Time <span class="badge badge-demo">SIMULATED DATA</span></h4>
+        <div class="chart-wrapper"><canvas id="chartDensity"></canvas></div>
+      </div>
+      <div class="chart-card glass">
+        <h4>Average Speed vs Time <span class="badge badge-demo">SIMULATED DATA</span></h4>
+        <div class="chart-wrapper"><canvas id="chartSpeed"></canvas></div>
+      </div>
+      <div class="chart-card glass">
+        <h4>Queue Length vs Time <span class="badge badge-demo">SIMULATED DATA</span></h4>
+        <div class="chart-wrapper"><canvas id="chartQueue"></canvas></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ AI ANALYSIS ═══════ -->
+  <section class="section" id="analysis">
+    <div class="section-header reveal">
+      <h2>🧠 AI ANALYSIS</h2>
+      <p>Vision Transformer and Graph Neural Network modules</p>
+    </div>
+
+    <div class="ai-modules reveal">
+      <!-- Vision Transformer Module -->
+      <div class="ai-module glass">
+        <h3>🔬 VISION TRANSFORMER</h3>
+
+        <div class="upload-zone" id="uploadZone">
+          <input type="file" id="imageUpload" accept="image/*">
+          <div class="upload-icon">📷</div>
+          <p>Click or drag a traffic image to analyze</p>
+        </div>
+
+        <img id="uploadPreview" alt="Uploaded traffic image">
+
+        <div class="ai-results-grid">
+          <div class="ai-result-card">
+            <div class="ai-val" id="vtVehicles">—</div>
+            <div class="ai-label">Vehicles Detected</div>
+          </div>
+          <div class="ai-result-card">
+            <div class="ai-val" id="vtDensity">—</div>
+            <div class="ai-label">Traffic Density</div>
+          </div>
+          <div class="ai-result-card">
+            <div class="ai-val" id="vtCongestion">—</div>
+            <div class="ai-label">Congestion Level</div>
+          </div>
+        </div>
+        <div class="text-center mt-1">
+          <span class="badge badge-demo">DEMO AI RESULT</span>
+        </div>
+      </div>
+
+      <!-- Graph Neural Network Module -->
+      <div class="ai-module glass">
+        <h3>🧬 GRAPH NEURAL NETWORK</h3>
+
+        <canvas id="gnnCanvas"></canvas>
+
+        <div class="ai-results-grid mt-2">
+          <div class="ai-result-card">
+            <div class="ai-val" id="gnnFlow">142</div>
+            <div class="ai-label">Vehicle Flow</div>
+          </div>
+          <div class="ai-result-card">
+            <div class="ai-val" id="gnnDensity">68%</div>
+            <div class="ai-label">Traffic Density</div>
+          </div>
+          <div class="ai-result-card">
+            <div class="ai-val" id="gnnSpeed">34</div>
+            <div class="ai-label">Avg Speed (km/h)</div>
+          </div>
+        </div>
+
+        <h4 style="margin-top:1.5rem;font-size:0.82rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;text-align:center;">Predicted Traffic Flow</h4>
+
+        <div class="prediction-grid">
+          <div class="pred-card">
+            <div class="pred-time">15 MIN</div>
+            <div class="pred-val" id="pred15">+12%</div>
+          </div>
+          <div class="pred-card">
+            <div class="pred-time">30 MIN</div>
+            <div class="pred-val" id="pred30">+24%</div>
+          </div>
+          <div class="pred-card">
+            <div class="pred-time">60 MIN</div>
+            <div class="pred-val" id="pred60">-8%</div>
+          </div>
+        </div>
+        <div class="text-center mt-1">
+          <span class="badge badge-demo">DEMO AI RESULT</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ TRAFFIC MAP ═══════ -->
+  <section class="section" id="map-section">
+    <div class="section-header reveal">
+      <h2>🗺️ TRAFFIC MAP</h2>
+      <p>Interactive city traffic visualization</p>
+    </div>
+
+    <div class="reveal">
+      <div id="leafletMap"></div>
+      <div class="map-legend mt-2">
+        <div class="legend-item"><div class="legend-dot" style="background:#00ff88;"></div> Free Flow</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#ffd32a;"></div> Moderate</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#ff8c00;"></div> Congested</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#ff4757;"></div> Heavy / Jammed</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ SIGNAL CONTROL ═══════ -->
+  <section class="section" id="signal">
+    <div class="section-header reveal">
+      <h2>🚦 SIGNAL CONTROL</h2>
+      <p>Adaptive traffic signal management</p>
+    </div>
+
+    <div class="signal-layout reveal">
+      <!-- Intersection View -->
+      <div class="intersection-view glass">
+        <div class="intersection-visual">
+          <!-- Roads -->
+          <div class="road-h"></div>
+          <div class="road-v"></div>
+          <div class="road-center"></div>
+
+          <!-- Direction labels -->
+          <div class="direction-label n">NORTH</div>
+          <div class="direction-label s">SOUTH</div>
+          <div class="direction-label e">EAST</div>
+          <div class="direction-label w">WEST</div>
+
+          <!-- Traffic Lights -->
+          <div class="tl-box north" id="tlNorth">
+            <div class="tl-lamp r on"></div>
+            <div class="tl-lamp y"></div>
+            <div class="tl-lamp g"></div>
+          </div>
+          <div class="tl-box south" id="tlSouth">
+            <div class="tl-lamp r on"></div>
+            <div class="tl-lamp y"></div>
+            <div class="tl-lamp g"></div>
+          </div>
+          <div class="tl-box east" id="tlEast">
+            <div class="tl-lamp r"></div>
+            <div class="tl-lamp y"></div>
+            <div class="tl-lamp g on"></div>
+          </div>
+          <div class="tl-box west" id="tlWest">
+            <div class="tl-lamp r on"></div>
+            <div class="tl-lamp y"></div>
+            <div class="tl-lamp g"></div>
+          </div>
+        </div>
+
+        <div class="signal-controls">
+          <button class="btn btn-primary btn-sm" id="autoModeBtn" onclick="toggleAutoMode()">🤖 AUTO MODE</button>
+          <button class="btn btn-outline btn-sm" id="manualModeBtn" onclick="toggleManualMode()">🖐️ MANUAL MODE</button>
+          <button class="btn btn-green btn-sm" id="optimizeBtn" onclick="optimizeSignal()">⚡ OPTIMIZE</button>
+          <button class="btn btn-outline btn-sm" id="resetSignalBtn" onclick="resetSignal()">🔄 RESET</button>
+        </div>
+      </div>
+
+      <!-- Signal Panel -->
+      <div class="signal-panel glass">
+        <h3>📋 SIGNAL STATUS</h3>
+        <div class="signal-info">
+          <div class="info-row">
+            <span class="info-label">Current Phase</span>
+            <span class="info-value" id="currentPhase" style="color:var(--green);">EAST GREEN</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Remaining Time</span>
+            <span class="info-value" id="remainingTime">24 sec</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Recommended Green</span>
+            <span class="info-value" id="recommendedGreen" style="color:var(--cyan);">35 sec</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Mode</span>
+            <span class="info-value" id="signalMode">AUTO</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Cycle Count</span>
+            <span class="info-value" id="cycleCount">0</span>
+          </div>
+        </div>
+
+        <div class="countdown-display">
+          <div class="cd-value" id="countdownValue">24</div>
+          <div class="cd-label">Seconds Remaining</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ DIGITAL TWIN ═══════ -->
+  <section class="section" id="twin">
+    <div class="section-header reveal">
+      <h2>🏙️ DIGITAL TWIN</h2>
+      <p>UrbanTwin AI simulation environment</p>
+      <span class="badge badge-sim mt-1">SIMULATION MODE</span>
+    </div>
+
+    <div class="twin-layout reveal">
+      <div class="twin-sim glass">
+        <canvas id="twinCanvas"></canvas>
+        <div class="twin-controls">
+          <button class="btn btn-primary btn-sm" id="twinStartBtn" onclick="twinStart()">▶ START</button>
+          <button class="btn btn-outline btn-sm" id="twinPauseBtn" onclick="twinPause()">⏸ PAUSE</button>
+          <button class="btn btn-outline btn-sm" id="twinResetBtn" onclick="twinReset()">🔄 RESET</button>
+        </div>
+      </div>
+
+      <div class="twin-panel glass">
+        <h3>📊 SIMULATION STATS</h3>
+        <div class="twin-stats">
+          <div class="twin-stat">
+            <span class="ts-label">Vehicle Count</span>
+            <span class="ts-value" id="twinVehicles">0</span>
+          </div>
+          <div class="twin-stat">
+            <span class="ts-label">Traffic Flow</span>
+            <span class="ts-value" id="twinFlow">0 v/min</span>
+          </div>
+          <div class="twin-stat">
+            <span class="ts-label">Average Speed</span>
+            <span class="ts-value" id="twinSpeed">0 km/h</span>
+          </div>
+          <div class="twin-stat">
+            <span class="ts-label">Queue Length</span>
+            <span class="ts-value" id="twinQueue">0</span>
+          </div>
+          <div class="twin-stat">
+            <span class="ts-label">Waiting Time</span>
+            <span class="ts-value" id="twinWaiting">0s</span>
+          </div>
+          <div class="twin-stat">
+            <span class="ts-label">Current Signal</span>
+            <span class="ts-value" id="twinSignal" style="color:var(--green);">—</span>
+          </div>
+        </div>
+
+        <div class="twin-env">
+          <div class="twin-env-flow">
+            <div class="twin-env-step">🏙️ Physical City</div>
+            <div class="twin-env-arrow">↕</div>
+            <div class="twin-env-step" style="background:rgba(0,212,255,0.15);color:var(--cyan);border-color:var(--cyan);">🧠 UrbanTwin AI</div>
+            <div class="twin-env-arrow">↕</div>
+            <div class="twin-env-step">💻 Digital Simulation</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ HARDWARE ═══════ -->
+  <section class="section" id="hardware">
+    <div class="section-header reveal">
+      <h2>🔌 HARDWARE</h2>
+      <p>Physical prototype components and connectivity</p>
+    </div>
+
+    <div class="hw-layout reveal">
+      <!-- Diagram -->
+      <div class="hw-diagram glass">
+        <h3 style="font-family:var(--font-display);font-size:0.9rem;letter-spacing:2px;color:var(--cyan);margin-bottom:1.5rem;text-align:center;">SYSTEM ARCHITECTURE</h3>
+        <div class="hw-diagram-visual">
+          <div class="hw-node"><span class="hw-icon">📡</span> IR SENSORS</div>
+          <div class="hw-arrow">↓</div>
+          <div class="hw-node"><span class="hw-icon">🔧</span> ESP32</div>
+          <div class="hw-arrow">↓</div>
+          <div class="hw-node"><span class="hw-icon">📶</span> Wi-Fi / LoRa</div>
+          <div class="hw-arrow">↓</div>
+          <div class="hw-node" style="background:rgba(0,212,255,0.15);color:var(--cyan);border-color:var(--cyan);"><span class="hw-icon">🧠</span> URBANTWIN AI</div>
+          <div class="hw-arrow">↓</div>
+          <div class="hw-node"><span class="hw-icon">⚡</span> SIGNAL OPTIMIZATION</div>
+          <div class="hw-arrow">↓</div>
+          <div class="hw-node"><span class="hw-icon">🔧</span> ESP32</div>
+          <div class="hw-arrow">↓</div>
+          <div class="hw-node"><span class="hw-icon">🚦</span> TRAFFIC LIGHTS</div>
+        </div>
+      </div>
+
+      <!-- Component Cards -->
+      <div>
+        <div class="hw-cards-grid">
+          <div class="hw-card glass">
+            <div class="hw-card-icon">🔧</div>
+            <h4>ESP32</h4>
+            <p class="hw-purpose">Main microcontroller</p>
+            <div class="hw-status"><span class="status-dot online"></span> Connected</div>
+          </div>
+          <div class="hw-card glass">
+            <div class="hw-card-icon">📡</div>
+            <h4>IR Sensor — North</h4>
+            <p class="hw-purpose">Vehicle detection</p>
+            <div class="hw-status"><span class="status-dot online"></span> Active</div>
+          </div>
+          <div class="hw-card glass">
+            <div class="hw-card-icon">📡</div>
+            <h4>IR Sensor — East</h4>
+            <p class="hw-purpose">Vehicle detection</p>
+            <div class="hw-status"><span class="status-dot online"></span> Active</div>
+          </div>
+          <div class="hw-card glass">
+            <div class="hw-card-icon">📡</div>
+            <h4>IR Sensor — South</h4>
+            <p class="hw-purpose">Vehicle detection</p>
+            <div class="hw-status"><span class="status-dot online"></span> Active</div>
+          </div>
+          <div class="hw-card glass">
+            <div class="hw-card-icon">📡</div>
+            <h4>IR Sensor — West</h4>
+            <p class="hw-purpose">Vehicle detection</p>
+            <div class="hw-status"><span class="status-dot online"></span> Active</div>
+          </div>
+          <div class="hw-card glass">
+            <div class="hw-card-icon">🚦</div>
+            <h4>LED Traffic Lights</h4>
+            <p class="hw-purpose">Signal display</p>
+            <div class="hw-status"><span class="status-dot online"></span> Online</div>
+          </div>
+          <div class="hw-card glass">
+            <div class="hw-card-icon">📷</div>
+            <h4>Traffic Camera</h4>
+            <p class="hw-purpose">Video stream / capture</p>
+            <div class="hw-status"><span class="status-dot online"></span> Streaming</div>
+          </div>
+          <div class="hw-card glass">
+            <div class="hw-card-icon">📶</div>
+            <h4>Wi-Fi Module</h4>
+            <p class="hw-purpose">Wireless communication</p>
+            <div class="hw-status"><span class="status-dot online"></span> Connected</div>
+          </div>
+          <div class="hw-card glass">
+            <div class="hw-card-icon">📻</div>
+            <h4>LoRa (Optional)</h4>
+            <p class="hw-purpose">Long-range communication</p>
+            <div class="hw-status"><span class="status-dot offline"></span> Not Connected</div>
+          </div>
+          <div class="hw-card glass">
+            <div class="hw-card-icon">📱</div>
+            <h4>Blynk (Optional)</h4>
+            <p class="hw-purpose">IoT dashboard</p>
+            <div class="hw-status"><span class="status-dot offline"></span> Not Connected</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ ABOUT ═══════ -->
+  <section class="section" id="about">
+    <div class="section-header reveal">
+      <h2>ℹ️ ABOUT</h2>
+      <p>Project information and technology stack</p>
+    </div>
+
+    <div class="about-layout reveal">
+      <div class="about-content">
+        <h3>UrbanTwin AI</h3>
+        <p>UrbanTwin AI is an intelligent traffic optimization platform designed to analyze urban traffic conditions, predict traffic flow and support adaptive traffic signal control using Vision Transformers and Graph Neural Networks.</p>
+
+        <h3>Objectives</h3>
+        <div class="objectives-list">
+          <div class="objective-item"><span class="check">✓</span> Vehicle Detection</div>
+          <div class="objective-item"><span class="check">✓</span> Traffic Density Estimation</div>
+          <div class="objective-item"><span class="check">✓</span> Traffic Flow Prediction</div>
+          <div class="objective-item"><span class="check">✓</span> Congestion Monitoring</div>
+          <div class="objective-item"><span class="check">✓</span> Adaptive Signal Control</div>
+          <div class="objective-item"><span class="check">✓</span> Smart City Traffic Management</div>
+        </div>
+      </div>
+
+      <div>
+        <h3 style="font-family:var(--font-display);font-size:1rem;color:var(--cyan);letter-spacing:1px;margin-bottom:1.2rem;">Technology Stack</h3>
+        <div class="tech-grid">
+          <div class="tech-card glass"><div class="tech-icon">🐍</div><h4>Python</h4></div>
+          <div class="tech-card glass"><div class="tech-icon">🔥</div><h4>PyTorch</h4></div>
+          <div class="tech-card glass"><div class="tech-icon">🤖</div><h4>TensorFlow</h4></div>
+          <div class="tech-card glass"><div class="tech-icon">👁️</div><h4>OpenCV</h4></div>
+          <div class="tech-card glass"><div class="tech-icon">🔢</div><h4>NumPy</h4></div>
+          <div class="tech-card glass"><div class="tech-icon">🐼</div><h4>Pandas</h4></div>
+          <div class="tech-card glass"><div class="tech-icon">🕸️</div><h4>NetworkX</h4></div>
+          <div class="tech-card glass"><div class="tech-icon">🔧</div><h4>ESP32</h4></div>
+          <div class="tech-card glass"><div class="tech-icon">🚗</div><h4>SUMO</h4></div>
+          <div class="tech-card glass"><div class="tech-icon">📱</div><h4>Blynk</h4></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ FOOTER ═══════ -->
+  <footer class="site-footer">
+    <div class="footer-brand">URBANTWIN AI</div>
+    <p class="footer-tagline">Smart Traffic Optimization Using Graph Neural Networks and Vision Transformers</p>
+    <div class="footer-links">
+      <a href="#home">Home</a>
+      <a href="#live">Dashboard</a>
+      <a href="#map-section">Traffic Map</a>
+      <a href="#analysis">AI Analysis</a>
+      <a href="#signal">Signal Control</a>
+      <a href="#twin">Digital Twin</a>
+      <a href="#hardware">Hardware</a>
+      <a href="#about">About</a>
+    </div>
+    <p class="footer-copy">© 2026 UrbanTwin AI. Smart Traffic Optimization Platform.</p>
+  </footer>
+
+  <!-- Toast container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- App JS -->
+  <script src="js/main.js"></script>
+</body>
+</html>
